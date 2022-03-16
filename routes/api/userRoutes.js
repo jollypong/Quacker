@@ -10,25 +10,22 @@ const {
     deleteFriend
 } = require('../../controllers/user-controller');
 
-// Set up GET all and POST at /api/users
-router.route('/')
-    .get()
-    .post();
-
-// /api/users
 router.route('/')
     .get(getAllUsers)
     .post(addUser);
+// example data
+// {
+//   "username": "lernantino",
+//   "email": "lernantino@gmail.com"
+// }
 
-// /api/users/:id
-router.route('/:id')
-    .get(getUser) 
+router.route('/:userId')
+    .get(getUser)
     .put(updateUser)
     .delete(deleteUser)
 
-// /api/users/:userId/friends/:friendId
-router.route('/:id/friends/:friendId')
+router.route('/:userId/friends/:friendId')
     .post(addFriend)
-    .delete(deleteFriend);
+    .delete(deleteFriend)
 
 module.exports = router;
