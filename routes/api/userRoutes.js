@@ -7,8 +7,8 @@ const {
     updateUser,
     deleteUser,
     addFriend,
-    deleteFriend
-} = require('../../controllers/user-controller');
+    deleteFriend,
+} = require('../../controllers/userController');
 
 // /api/users
 router.route('/')
@@ -16,7 +16,7 @@ router.route('/')
     .post(addUser);
 // example data
 // {
-//   "username": "lernantino",
+//   "userName": "lernantino",
 //   "email": "lernantino@gmail.com"
 // }
 

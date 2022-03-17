@@ -4,15 +4,15 @@ const userSchema = new Schema(
   {
     userName: {
       type: String,
-      unique: true, 
+      unique: [true, "That username is already in use!"],
       required: true,
-      trim: true, 
+      trim: true,
     },
-   email: {
+    email: {
       type: String,
-      required: true, 
+      required: true,
       unique: true,
-      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/]
     },
     thoughts: [
       {
@@ -35,7 +35,7 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.virtual('friendCount').get(function(){
+userSchema.virtual('friendCount').get(function () {
   return this.friends.length;
 })
 

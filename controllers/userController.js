@@ -21,11 +21,6 @@ const userController = {
   // get user by ID /api/users/:userId
   getUser(req, res) {
     User.findOne({ _id: req.params.userId })
-      .select('-__v')
-      .populate([
-        { path: 'thoughts', select: "-__v" },
-        { path: 'thoughts', select: "-__v" }
-      ])
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No user with that ID' })
@@ -51,14 +46,27 @@ const userController = {
 
   // delete User /api/users/:userId
   deleteUser(req, res) {
-    User.findOneAndDelete({ _id: req.params.UserId })
+    User.findOneAndRemove({ _id: req.params.userId })
       .then((user) =>
         !user
-          ? res.status(404).json({ message: 'No user with that ID' })
-          : friend.deleteMany({ _id: { $in: user.friends } })
+          ? res.status(404).json({ message: 'No such user exists' })
+          : Thought.findOneAndUpdate(
+            { user: req.params.userId },
+            { $pull: { user: req.params.userId } },
+            { new: true }
+          )
       )
-      .then(() => res.json({ message: 'User and friends deleted!' }))
-      .catch((err) => res.status(500).json(err));
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({
+            message: 'User deleted, but no thoughts found',
+          })
+          : res.json({ message: 'User and associated thoughts successfully deleted' })
+      )
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
   },
 
   // add friend /api/users/:userId/friends/:friendId
@@ -81,7 +89,7 @@ const userController = {
   },
 
   // delete friend /api/users/:userId/friends/:friendId
-  removeFriend(req, res) {
+  deleteFriend(req, res) {
     User.findOneAndUpdate(
       { _id: req.params.userId },
       { $pull: { friend: { friendId: req.params.friendId } } },
