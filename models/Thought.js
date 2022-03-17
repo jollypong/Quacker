@@ -17,14 +17,15 @@ const thoughtSchema = new Schema(
             type: Date,
             required: true, 
             default: Date.now,
-            get: (createdAtValue) => moment(createdAtValue).format('MMM DD, YYYY [at] hh:mm a')
+            get: (dateValue) => moment(dateValue).format('MMM DD, YYYY [at] hh:mm a')
         },
         userName:
         {
             type: String,
             required: true, 
+            ref: 'User'
         },
-        reaction: [
+        reactions: [
             reactionSchema
         ],
     },
@@ -38,9 +39,9 @@ const thoughtSchema = new Schema(
 );
 
 thoughtSchema.virtual('reactionCount').get(function () {
-    return this.reaction.length;
+    return this.reactions.length;
 })
 
-const Thought = model('thought', thoughtSchema);
+const Thought = model('Thought', thoughtSchema);
 
 module.exports = Thought;

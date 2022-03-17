@@ -11,23 +11,10 @@ const thoughtController = {
   // add thought /api/thoughts
   addThought(req, res) {
     Thought.create(req.body)
-      .then((thought) => {
-        return User.findOneAndUpdate(
-          { _id: req.body.userId },
-          { $addToSet: { thoughts: thought._id } },
-          { new: true }
-        );
-      })
-      .then((user) =>
-        !user
-          ? res
-            .status(404)
-            .json({ message: 'Thought created, but found no user with that ID' })
-          : res.json('Created new Thought 🎉')
-      )
+      .then((thought) => res.json(thought))
       .catch((err) => {
         console.log(err);
-        res.status(500).json(err);
+        return res.status(500).json(err);
       });
   },
 
@@ -60,27 +47,17 @@ const thoughtController = {
 
   // delete Thought,
   deleteThought(req, res) {
-    Thought.findOneAndRemove({ _id: req.params.thoughtId })
+    Thought.findOneAndDelete({ _id: req.params.thoughtId })
       .then((thought) =>
         !thought
-          ? res.status(404).json({ message: 'No such thought exists' })
-          : Reaction.findOneAndUpdate(
-            { reaction: req.params.reactionId },
-            { $pull: { thought: req.params.thoughtId } },
-            { new: true }
-          )
+          ? res.status(404).json({ message: 'No thought with that ID!' })
+          : User.findOneAndUpdate(
+            { user: req.params.userId },
+            { $pull: { thoughts: req.params.thoughtId } },
+            { new: true })
       )
-      .then((reaction) =>
-        !reaction
-          ? res.status(404).json({
-            message: 'Thought deleted, but no reaction was found!',
-          })
-          : res.json({ message: 'Thought and associated reactions successfully deleted' })
-      )
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-      });
+      .then(() => res.json({ message: 'Thought successfully deleted!' }))
+      .catch((err) => res.status(500).json(err));
   },
 
   // add Reaction,
@@ -88,7 +65,7 @@ const thoughtController = {
     // console.log('You are adding an reaction');
     // console.log(req.body);
     Thought.findOneAndUpdate(
-      { _id: req.params.reactionId },
+      { _id: req.params.thoughtId },
       { $addToSet: { reactions: req.body } },
       { runValidators: true, new: true }
     )
@@ -96,8 +73,8 @@ const thoughtController = {
         !thought
           ? res
             .status(404)
-            .json({ message: 'No Thought found with that ID :(' })
-          : res.json({ message: "Successfully updated!" })
+            .json({ message: 'No Thought found with that ID' })
+          : res.json({thought, message: "Reaction was added!"})
       )
       .catch((err) => res.status(500).json(err));
   },
@@ -106,15 +83,13 @@ const thoughtController = {
   deleteReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
-      { $pull: { reaction: { reactionId: req.params.reactionId } } },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
       { runValidators: true, new: true }
     )
       .then((thought) =>
         !thought
-          ? res
-            .status(404)
-            .json({ message: 'No thought found with that ID' })
-          : res.json({ message: "Successfully deleted!" })
+          ? res.status(404).json({ message: 'No thought found with that ID' })
+          : res.json({thought, message: "Reaction was deleted!"})
       )
       .catch((err) => res.status(500).json(err));
   },

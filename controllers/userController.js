@@ -71,19 +71,15 @@ const userController = {
 
   // add friend /api/users/:userId/friends/:friendId
   addFriend(req, res) {
-    console.log('You are adding an friend');
-    console.log(req.body);
     User.findOneAndUpdate(
       { _id: req.params.userId },
-      { $addToSet: { friends: req.body } },
+      { $addToSet: { friends: req.params.friendId } },
       { runValidators: true, new: true }
     )
       .then((user) =>
         !user
-          ? res
-            .status(404)
-            .json({ message: 'No user found with that ID :(' })
-          : res.json({message: "Successfully updated!"})
+          ? res.status(404).json({ message: 'No user found with that ID!' })
+          : res.json({user, message: "Friend added successfully!"})
       )
       .catch((err) => res.status(500).json(err));
   },
@@ -100,7 +96,7 @@ const userController = {
           ? res
             .status(404)
             .json({ message: 'No user found with that ID :(' })
-          : res.json({message: "Successfully deleted!"})
+          : res.json({user, message: "Successfully deleted!"})
       )
       .catch((err) => res.status(500).json(err));
   },
