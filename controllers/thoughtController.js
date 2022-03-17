@@ -71,10 +71,8 @@ const thoughtController = {
     )
       .then((thought) =>
         !thought
-          ? res
-            .status(404)
-            .json({ message: 'No Thought found with that ID' })
-          : res.json({thought, message: "Reaction was added!"})
+          ? res.status(404).json({ message: 'No Thought found with that ID' })
+          : res.json({ thought, message: "Reaction was added!" })
       )
       .catch((err) => res.status(500).json(err));
   },
@@ -83,13 +81,13 @@ const thoughtController = {
   deleteReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
-      { $pull: { reactions: { reactionId: req.params.reactionId } } },
-      { runValidators: true, new: true }
+      { $pull: { reactions: {reactionId: req.params.reactionId} } },
+      { new: true }
     )
       .then((thought) =>
         !thought
           ? res.status(404).json({ message: 'No thought found with that ID' })
-          : res.json({thought, message: "Reaction was deleted!"})
+          : res.json({ thought, message: "Reaction was deleted!" })
       )
       .catch((err) => res.status(500).json(err));
   },
