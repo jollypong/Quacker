@@ -74,7 +74,7 @@ However, please feel free to add the feature to contribute to this project or co
 ## Demo 
 Demo Video is divided into 2 Parts: 
 
-Demo: Visual Studio Guide [here](https://youtu.be/sCtIlofURWQ)
+Demo: Visual Studio Guide [here](https://youtu.be/-xS3f0pTLVw)
 
 Demo: Insomnia Guide [here](https://youtu.be/bOc05Kgt0r0)
 ## Contribution
